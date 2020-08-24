@@ -1,5 +1,6 @@
 package com.example.randomnumbergenerate;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.ClipData;
@@ -9,6 +10,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import java.util.Random;
@@ -18,7 +21,8 @@ TextView textViewRandomNumber;
 ClipboardManager clipboardManager;
 ClipData clipData;
 public static final String PREFERENCE = "GENERATENUMER";
-public static final String startingNumber = "NUMBER";
+public static final String STTARTINGNUMBER = "NUMBER";
+public static final String TEXTTOSEND = "TEXTTOSEND";
 SharedPreferences sharedPreferences;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +31,7 @@ SharedPreferences sharedPreferences;
         textViewRandomNumber = (TextView) findViewById(R.id.textViewRandomNumber);
         clipboardManager = (ClipboardManager)getSystemService(CLIPBOARD_SERVICE);
         sharedPreferences = getSharedPreferences(PREFERENCE, Context.MODE_PRIVATE);
-        String channel = (sharedPreferences.getString(startingNumber,"0000"));
+        String channel = (sharedPreferences.getString(STTARTINGNUMBER,"0000"));
         textViewRandomNumber.setText(channel);
     }
     public int generateRandomNumber(int size)
@@ -43,7 +47,7 @@ SharedPreferences sharedPreferences;
             generatedNumber = generatedNumber+test;
         }
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(startingNumber,Integer.toString(generatedNumber));
+        editor.putString(STTARTINGNUMBER,Integer.toString(generatedNumber));
         editor.commit();
         return generatedNumber;
     }
@@ -64,9 +68,33 @@ SharedPreferences sharedPreferences;
         Intent intent = new Intent(Intent.ACTION_SEND);
         String title = "Send Message...";
         String message = textViewRandomNumber.getText().toString();
-        intent.putExtra(Intent.EXTRA_TEXT,message);
+        sharedPreferences = getSharedPreferences(PREFERENCE, Context.MODE_PRIVATE);
+        String textSaved = (sharedPreferences.getString(TEXTTOSEND,"${key}"));
+        textSaved = textSaved.replaceAll("\\$\\(key\\)",message);
+        intent.putExtra(Intent.EXTRA_TEXT,textSaved);
         intent.setType("text/plain");
         Intent chooser = Intent.createChooser(intent,title);
         startActivity(chooser);
+    }
+
+    public void onClickEdit(View view) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        View dView = getLayoutInflater().inflate(R.layout.dialoglayout,null);
+        final EditText editText = dView.findViewById(R.id.editText);
+        String channel = (sharedPreferences.getString(TEXTTOSEND, String.valueOf(R.string.InfoDetail)));
+        editText.setText(channel);
+        Button buttonSave = dView.findViewById(R.id.buttonSave);
+        buttonSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String savedText = editText.getText().toString();
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString(TEXTTOSEND,savedText);
+                editor.commit();
+            }
+        });
+        builder.setView(dView);
+        final AlertDialog dialog = builder.create();
+        dialog.show();
     }
 }

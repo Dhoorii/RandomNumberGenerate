@@ -2,4 +2,6 @@
     <string name="app_name">RandomNumberGenerate</string>
     <string name="Generate">Generate Number</string>
     <string name="Send">Send</string>
+    <string name="InfoDetail">please put your text that you want to be send via msg(put $(key) for generated key value)</string>
+    <string name="save">save</string>
 </resources>
