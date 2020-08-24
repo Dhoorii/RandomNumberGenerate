@@ -48,7 +48,8 @@ SharedPreferences sharedPreferences;
         }
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(STTARTINGNUMBER,Integer.toString(generatedNumber));
-        editor.commit();
+        editor.apply();
+        //editor.commit();
         return generatedNumber;
     }
 
@@ -90,7 +91,8 @@ SharedPreferences sharedPreferences;
                 String savedText = editText.getText().toString();
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putString(TEXTTOSEND,savedText);
-                editor.commit();
+                //editor.commit();
+                editor.apply();
             }
         });
         builder.setView(dView);
